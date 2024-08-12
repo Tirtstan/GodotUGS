@@ -6,42 +6,32 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "my_node.hpp"
-#include "my_singleton.hpp"
+#include "gdexample.h"
 
 using namespace godot;
 
-static MySingleton *_my_singleton;
-
-void gdextension_initialize(ModuleInitializationLevel p_level)
+void GodotUGS_initialize(ModuleInitializationLevel p_level)
 {
-	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
-	{
-		ClassDB::register_class<MyNode>();
-		ClassDB::register_class<MySingleton>();
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
+		return;
 
-		_my_singleton = memnew(MySingleton);
-		Engine::get_singleton()->register_singleton("MySingleton", MySingleton::get_singleton());
-	}
+	GDREGISTER_CLASS(GDExample);
 }
 
-void gdextension_terminate(ModuleInitializationLevel p_level)
+void GodotUGS_terminate(ModuleInitializationLevel p_level)
 {
-	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)
-	{
-		Engine::get_singleton()->unregister_singleton("MySingleton");
-		memdelete(_my_singleton);
-	}
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
+		return;
 }
 
 extern "C"
 {
-	GDExtensionBool GDE_EXPORT gdextension_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization)
+	GDExtensionBool GDE_EXPORT GodotUGS_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization)
 	{
 		godot::GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
 
-		init_obj.register_initializer(gdextension_initialize);
-		init_obj.register_terminator(gdextension_terminate);
+		init_obj.register_initializer(GodotUGS_initialize);
+		init_obj.register_terminator(GodotUGS_terminate);
 		init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
 
 		return init_obj.init();

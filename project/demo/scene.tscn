@@ -1,8 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7u64tpv6byvb"]
+[gd_scene load_steps=3 format=3 uid="uid://c7u64tpv6byvb"]
 
 [ext_resource type="Script" path="res://demo/scene.gd" id="1_lih0m"]
+[ext_resource type="Texture2D" uid="uid://cv1nv5735hk7e" path="res://icon.jpg" id="2_5rjm6"]
 
 [node name="Scene" type="Node"]
 script = ExtResource("1_lih0m")
 
-[node name="MyNode" type="MyNode" parent="."]
+[node name="GDExample" type="GDExample" parent="."]
+speed = 1.0
+position = Vector2(8.86108, 17.6498)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_5rjm6")
+
+[connection signal="position_changed" from="GDExample" to="." method="_on_gd_example_position_changed"]
