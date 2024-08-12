@@ -6,7 +6,6 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "gdexample.h"
 #include "HttpExample.h"
 
 using namespace godot;
@@ -16,7 +15,6 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
 
-	GDREGISTER_CLASS(GDExample);
 	GDREGISTER_CLASS(HttpExample);
 }
 

@@ -9,7 +9,7 @@ env = SConscript("godot-cpp/SConstruct")
 cpppath = ["src/"] + glob("src/**/", recursive=True)
 
 # Add include paths for the third-party library (e.g., cpr)
-cpppath.append("dependencies/include")
+cpppath.append("dependencies/include/")
 
 # Append the collected paths to the CPPPATH
 env.Append(CPPPATH=cpppath)
@@ -27,10 +27,10 @@ addon_path = Path(extension_path).parent
 project_name = Path(extension_path).stem
 
 # Add library paths for the third-party library (e.g., cpr)
-env.Append(LIBPATH=["dependencies/lib"])
+env.Append(LIBPATH=["dependencies/lib/"])
 
 # Link the third-party library (e.g., cpr)
-env.Append(LIBS=["cpr"])
+env.Append(LIBS=["cpr", "libcurl", "zlib"])
 
 # Ensure the runtime library setting matches
 env.Append(CCFLAGS=['/MT'])  # Use /MD for dynamic runtime or /MT for static runtime

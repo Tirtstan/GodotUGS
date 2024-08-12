@@ -19,7 +19,6 @@ linux.release.rv64 = "bin/libGodotUGS.linux.release.rv64.so"
 [dependencies]
 
 windows.debug = {
-    "bin/cpr.dll" : "libraries",
     "bin/libcurl-d.dll" : "libraries",
     "bin/zlib.dll" : "libraries"
 }

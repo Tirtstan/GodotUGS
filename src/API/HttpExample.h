@@ -1,5 +1,5 @@
-#ifndef HTTPEXAMPLE_H
-#define HTTPEXAMPLE_H
+#ifndef GODOTUGS_H
+#define GODOTUGS_H
 
 #include <godot_cpp/classes/node.hpp>
 
