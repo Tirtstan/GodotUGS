@@ -15,3 +15,11 @@ linux.debug.arm64 = "bin/libGodotUGS.linux.debug.arm64.so"
 linux.release.arm64 = "bin/libGodotUGS.linux.release.arm64.so"
 linux.debug.rv64 = "bin/libGodotUGS.linux.debug.rv64.so"
 linux.release.rv64 = "bin/libGodotUGS.linux.release.rv64.so"
+
+[dependencies]
+
+windows.debug = {
+    "bin/cpr.dll" : "libraries",
+    "bin/libcurl-d.dll" : "libraries",
+    "bin/zlib.dll" : "libraries"
+}

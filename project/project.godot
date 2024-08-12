@@ -10,6 +10,10 @@ config_version=5
 
 [application]
 
-config/name="project"
-run/main_scene="res://demo/scene.tscn"
+config/name="GodotUGS"
 config/features=PackedStringArray("4.2", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720

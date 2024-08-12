@@ -7,6 +7,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "gdexample.h"
+#include "HttpExample.h"
 
 using namespace godot;
 
@@ -16,6 +17,7 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 		return;
 
 	GDREGISTER_CLASS(GDExample);
+	GDREGISTER_CLASS(HttpExample);
 }
 
 void GodotUGS_terminate(ModuleInitializationLevel p_level)
