@@ -26,7 +26,7 @@ namespace godot
         void set_id(const int p_id);
         int get_id() const;
 
-                void set_name(const String p_name);
+        void set_name(const String p_name);
         String get_name() const;
 
         void set_surname(const String p_surname);

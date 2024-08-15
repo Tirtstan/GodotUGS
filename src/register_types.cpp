@@ -16,7 +16,7 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
 
-	GDREGISTER_CLASS(UnityServices);
+	GDREGISTER_RUNTIME_CLASS(UnityServices);
 	GDREGISTER_CLASS(Data);
 }
 

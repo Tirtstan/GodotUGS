@@ -1,2 +1,4 @@
 *
+!libcurl-d.dll
+!zlib.dll
 !.gitignore
