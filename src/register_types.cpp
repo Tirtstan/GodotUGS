@@ -6,7 +6,8 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "HttpExample.h"
+#include "UnityServices.h"
+#include "Data.h"
 
 using namespace godot;
 
@@ -15,7 +16,8 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
 
-	GDREGISTER_CLASS(HttpExample);
+	GDREGISTER_CLASS(UnityServices);
+	GDREGISTER_CLASS(Data);
 }
 
 void GodotUGS_terminate(ModuleInitializationLevel p_level)

@@ -1,25 +1,28 @@
-#include "HttpExample.h"
+#include "UnityServices.h"
 #include <cpr/cpr.h>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
 using namespace godot;
 
-void HttpExample::_bind_methods()
+void UnityServices::_bind_methods()
+{
+    ClassDB::bind_method(D_METHOD("get_project_id"), &UnityServices::get_project_id);
+    ClassDB::bind_method(D_METHOD("set_project_id", "p_id"), &UnityServices::set_project_id);
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "project_id", PROPERTY_HINT_PASSWORD), "set_project_id", "get_project_id");
+}
+
+UnityServices::UnityServices()
 {
 }
 
-HttpExample::HttpExample()
+UnityServices::~UnityServices()
 {
 }
 
-HttpExample::~HttpExample()
+void UnityServices::_ready()
 {
-}
-
-void HttpExample::_ready()
-{
-    UtilityFunctions::print("HttpExample::_ready() called");
+    UtilityFunctions::print("UnityServices::_ready() called");
 
     UtilityFunctions::print("Before making HTTP request...");
     cpr::Response r;
@@ -41,9 +44,16 @@ void HttpExample::_ready()
     }
 
     UtilityFunctions::print("Before processing response text...");
-    String text = "Yo";
-    text = r.text.c_str();
+    String text = r.text.c_str();
     UtilityFunctions::print("Response text: " + text);
+}
 
-    UtilityFunctions::print(text);
+String UnityServices::get_project_id() const
+{
+    return project_id;
+}
+
+void UnityServices::set_project_id(const String p_id)
+{
+    project_id = p_id;
 }
