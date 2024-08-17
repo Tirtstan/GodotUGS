@@ -13,7 +13,15 @@ config_version=5
 config/name="GodotUGS"
 config/features=PackedStringArray("4.3", "Forward Plus")
 
+[autoload]
+
+GUGS="*res://addons/GodotUGS/Autoloads/GodotUGS.tscn"
+
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/GodotUGS/plugin.cfg")

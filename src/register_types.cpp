@@ -6,8 +6,10 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include "APIResource.h"
+#include "GodotUGS.h"
 #include "UnityServices.h"
-#include "Data.h"
+#include "AuthenticationService.h"
 
 using namespace godot;
 
@@ -16,14 +18,22 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
 
+	GDREGISTER_CLASS(APIResource);
+	GDREGISTER_CLASS(GodotUGS);
 	GDREGISTER_RUNTIME_CLASS(UnityServices);
-	GDREGISTER_CLASS(Data);
+	GDREGISTER_RUNTIME_CLASS(AuthenticationService);
+
+	Engine::get_singleton()->register_singleton("UnityServices", memnew(UnityServices));
+	Engine::get_singleton()->register_singleton("AuthenticationService", memnew(AuthenticationService));
 }
 
 void GodotUGS_terminate(ModuleInitializationLevel p_level)
 {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
+
+	Engine::get_singleton()->unregister_singleton("UnityServices");
+	Engine::get_singleton()->unregister_singleton("AuthenticationService");
 }
 
 extern "C"
