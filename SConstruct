@@ -41,6 +41,16 @@ env.Append(CCFLAGS=['/MT'])  # Use /MD for dynamic runtime or /MT for static run
 #     CacheDir(scons_cache_path)
 #     print("Scons cache enabled... (path: '" + scons_cache_path + "')")
 
+
+# Class Documentation, dont run every time?
+# if env["target"] in ["editor", "template_debug"]:
+#     try:
+#         doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=glob("doc_classes/*.xml"))
+#         sources.append(doc_data)
+#     except AttributeError:
+#         print("Not including class reference as we're targeting a pre-4.3 baseline.")
+
+
 # Create the library target (e.g. libexample.linux.debug.x86_64.so).
 debug_or_release = "release" if env["target"] == "template_release" else "debug"
 if env["platform"] == "macos":
