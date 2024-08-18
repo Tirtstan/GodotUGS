@@ -1,14 +1,32 @@
 #include "GodotUGS.h"
 
+#include <godot_cpp/classes/engine.hpp>
+
 using namespace godot;
+
+GodotUGS *GodotUGS::instance = nullptr;
+
+GodotUGS::GodotUGS()
+{
+    instance = this;
+}
+
+GodotUGS::~GodotUGS()
+{
+    if (instance == this)
+        instance = nullptr;
+}
+
+GodotUGS *GodotUGS::get_singleton()
+{
+    return instance;
+}
 
 void GodotUGS::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("get_api_resource"), &GodotUGS::get_api_resource);
     ClassDB::bind_method(D_METHOD("set_api_resource", "p_resource"), &GodotUGS::set_api_resource);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "api_resource", PROPERTY_HINT_RESOURCE_TYPE, "APIResource"), "set_api_resource", "get_api_resource");
-
-    ClassDB::bind_method(D_METHOD("get_project_id"), &GodotUGS::get_project_id);
 }
 
 Ref<APIResource> GodotUGS::get_api_resource() const

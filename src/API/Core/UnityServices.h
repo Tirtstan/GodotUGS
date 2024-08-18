@@ -11,6 +11,8 @@ namespace godot
         GDCLASS(UnityServices, Object)
 
     private:
+        static UnityServices *instance;
+
         const String UnityServicesUrl = "https://services.api.unity.com";
         String environment = "production";
 
@@ -20,13 +22,12 @@ namespace godot
     public:
         UnityServices();
         ~UnityServices();
+        static UnityServices *get_singleton();
 
         void initialize();
 
         String get_environment() const;
         void set_environment(const String environment);
-
-        static String get_project_id();
     };
 }
 
