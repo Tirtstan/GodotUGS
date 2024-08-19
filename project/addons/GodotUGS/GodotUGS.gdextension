@@ -20,5 +20,10 @@ linux.release.rv64 = "bin/libGodotUGS.linux.release.rv64.so"
 
 windows.debug = {
     "bin/libcurl-d.dll" : "libraries",
+    "bin/zlibd.dll" : "libraries"
+}
+
+windows.release = {
+    "bin/libcurl.dll" : "libraries",
     "bin/zlib.dll" : "libraries"
 }
