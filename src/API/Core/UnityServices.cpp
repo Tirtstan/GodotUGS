@@ -2,11 +2,6 @@
 #include <cpr/cpr.h>
 
 #include <godot_cpp/variant/utility_functions.hpp>
-#include <godot_cpp/classes/engine.hpp>
-#include <godot_cpp/classes/scene_tree.hpp>
-#include <godot_cpp/classes/window.hpp>
-#include <godot_cpp/classes/node.hpp>
-
 #include "GodotUGS.h"
 
 using namespace godot;
@@ -40,7 +35,6 @@ void UnityServices::_bind_methods()
 
 void UnityServices::initialize()
 {
-    UtilityFunctions::print(GodotUGS::get_singleton()->get_project_id());
     if (environment.is_empty())
         environment = "production";
 
