@@ -1,4 +1,11 @@
 *
+
+# Debug
 !libcurl-d.dll
 !zlib.dll
+
+#Release
+!libcurl.dll
+!zlibd.dll
+
 !.gitignore

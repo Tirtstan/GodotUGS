@@ -2,6 +2,7 @@
 #define AUTHENTICATIONSERVICE_H
 
 #include <godot_cpp/classes/object.hpp>
+#include "SignInResponse.h"
 
 namespace godot
 {
@@ -17,7 +18,6 @@ namespace godot
         String player_id;
         String player_name;
         String profile = "DefaultProfile";
-        bool session_token_exists = false;
         String last_notification_date;
 
         String session_token;

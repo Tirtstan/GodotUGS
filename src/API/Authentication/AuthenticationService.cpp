@@ -2,6 +2,7 @@
 #include "UnityServices.h"
 
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/classes/json.hpp>
 
 using namespace godot;
 
@@ -48,7 +49,8 @@ void AuthenticationService::_bind_methods()
 
 void AuthenticationService::on_initialized(bool initialized)
 {
-    UtilityFunctions::print("Unity Services initialized from auth!");
+    if (!initialized)
+        return;
 }
 
 bool AuthenticationService::is_signed_in() const
@@ -78,7 +80,7 @@ String AuthenticationService::get_profile() const
 
 bool AuthenticationService::does_session_token_exists() const
 {
-    return session_token_exists;
+    return !session_token.is_empty();
 }
 
 void AuthenticationService::sign_in_anonymously()

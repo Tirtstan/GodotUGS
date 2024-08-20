@@ -18,10 +18,16 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
 		return;
 
+	// Base
 	GDREGISTER_CLASS(APIResource);
 	GDREGISTER_CLASS(GodotUGS);
 	GDREGISTER_RUNTIME_CLASS(UnityServices);
 	GDREGISTER_RUNTIME_CLASS(AuthenticationService);
+
+	// Auth
+	GDREGISTER_INTERNAL_CLASS(SignInResponse);
+	GDREGISTER_INTERNAL_CLASS(User);
+	GDREGISTER_INTERNAL_CLASS(ExternalIdentity);
 
 	Engine::get_singleton()->register_singleton("UnityServices", memnew(UnityServices));
 	Engine::get_singleton()->register_singleton("AuthenticationService", memnew(AuthenticationService));
