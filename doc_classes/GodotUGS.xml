@@ -6,13 +6,6 @@
 	</description>
 	<tutorials>
 	</tutorials>
-	<methods>
-		<method name="get_project_id">
-			<return type="String" />
-			<description>
-			</description>
-		</method>
-	</methods>
 	<members>
 		<member name="api_resource" type="APIResource" setter="set_api_resource" getter="get_api_resource">
 		</member>

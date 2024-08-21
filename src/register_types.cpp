@@ -23,6 +23,7 @@ void GodotUGS_initialize(ModuleInitializationLevel p_level)
 	GDREGISTER_CLASS(GodotUGS);
 	GDREGISTER_RUNTIME_CLASS(UnityServices);
 	GDREGISTER_RUNTIME_CLASS(AuthenticationService);
+	GDREGISTER_INTERNAL_CLASS(CoreExceptionContent);
 
 	// Auth
 	GDREGISTER_INTERNAL_CLASS(SignInResponse);

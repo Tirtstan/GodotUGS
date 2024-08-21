@@ -2,7 +2,11 @@
 #define UNITYSERVICES_H
 
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/json.hpp>
+
 #include "APIResource.h"
+#include "GodotUGS.h"
+#include "CoreExceptionContent.h"
 
 namespace godot
 {
@@ -27,7 +31,7 @@ namespace godot
         void initialize();
 
         String get_environment() const;
-        void set_environment(const String environment);
+        void set_environment(const String &environment = "production");
     };
 }
 
