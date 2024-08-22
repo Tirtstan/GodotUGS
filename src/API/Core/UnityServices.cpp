@@ -39,18 +39,17 @@ void UnityServices::initialize()
     if (environment.is_empty())
         environment = "production";
 
-    cpr::Response response = cpr::Get(cpr::Url{UnityServicesUrl.utf8()});
+    cpr::GetCallback([](const cpr::Response &response)
+                     {
+                        bool success = response.status_code == 200;
 
-    emit_signal("on_initialized", response.status_code == 200);
-    if (response.status_code != 200)
-    {
-        Dictionary parsed_dict = JSON::parse_string(response.text.c_str());
-        Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent);
-        parsed_content->from_dict(parsed_dict);
-
-        String msg = parsed_content->detail.is_empty() ? parsed_content->detail2 : parsed_content->detail;
-        ERR_FAIL_MSG(msg);
-    }
+                        instance->emit_signal("on_initialized", success);
+                        if (!success)
+                        {
+                            Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(response.text.c_str()));
+                            ERR_FAIL_MSG(parsed_content->get_message());
+                        } },
+                     cpr::Url{UnityServicesUrl.utf8()});
 }
 
 String UnityServices::get_environment() const

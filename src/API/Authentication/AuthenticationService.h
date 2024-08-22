@@ -33,6 +33,7 @@ namespace godot
         void _on_initialized(bool initialized);
 
         void sign_in_with_session_token(const String &session_token);
+        void handle_sign_in_response(int code, String text);
         void clear_access_token();
 
         void save_cache();

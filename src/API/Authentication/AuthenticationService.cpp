@@ -3,8 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/reg_ex.hpp>
-#include <godot_cpp/classes/http_client.hpp>
-#include <godot_cpp/classes/os.hpp>
+#include <godot_cpp/classes/thread.hpp>
 #include <cpr/cpr.h>
 
 using namespace godot;
@@ -134,83 +133,19 @@ void AuthenticationService::sign_in_with_session_token(const String &session_tok
 
 void AuthenticationService::sign_in_with_username_password(const String &username, const String &password)
 {
-    String url = AUTH_URL.utf8() + "/authentication/usernamepassword/sign-in";
+    String url = AUTH_URL.utf8() + "/v1/authentication/usernamepassword/sign-in";
     Dictionary dict;
     dict["username"] = username;
     dict["password"] = password;
     String json_string = JSON::stringify(dict);
 
-    // auto future_text = cpr::PostCallback([](cpr::Response r)
-    //                                      {
-    //                                         AuthenticationService::get_singleton()->auth_test((String)r.text.c_str());
-    //                                         return r.text; },
-    //                                      cpr::Url{url.utf8()},
-    //                                      cpr::Header{
-    //                                          {"ProjectId", (std::string)project_id.utf8()},
-    //                                          {"UnityEnvironment", (std::string)environment.utf8()},
-    //                                          {"Content-Type", "application/json"}},
-    //                                      cpr::Body{json_string.utf8()});
-
-    Ref<HTTPClient> http = memnew(HTTPClient);
-    Error err = http->connect_to_host(AUTH_URL);
-    if (err != Error::OK)
-        ERR_FAIL_MSG("Failed to connect to host: " + String::num(err));
-
-    while (http->get_status() == HTTPClient::Status::STATUS_CONNECTING || http->get_status() == HTTPClient::Status::STATUS_RESOLVING)
-    {
-        http->poll();
-        UtilityFunctions::print("connecting...");
-        OS::get_singleton()->delay_usec(1000);
-    }
-
-    if (http->get_status() != HTTPClient::Status::STATUS_CONNECTED)
-        ERR_FAIL_MSG("Failed to connect to host: " + String::num(http->get_status()));
-
-    PackedStringArray headers = {"ProjectId: " + project_id, "UnityEnvironment: " + environment, "Content-Type: application/json"};
-    err = http->request(HTTPClient::Method::METHOD_POST, "/v1/authentication/usernamepassword/sign-in", headers, json_string);
-    if (err != Error::OK)
-        ERR_FAIL_MSG("Failed to request: " + String::num(err));
-
-    while (http->get_status() == HTTPClient::Status::STATUS_REQUESTING)
-    {
-        http->poll();
-        UtilityFunctions::print("requesting...");
-        OS::get_singleton()->delay_usec(1000);
-    }
-
-    if (http->get_status() != HTTPClient::STATUS_BODY && http->get_status() != HTTPClient::STATUS_CONNECTED)
-        ERR_FAIL_MSG("Failed to get body: " + String::num(http->get_status()));
-
-    String text;
-    if (http->has_response())
-    {
-        PackedByteArray rb = PackedByteArray();
-
-        while (http->get_status() == HTTPClient::STATUS_BODY)
-        {
-            http->poll();
-            PackedByteArray chunk = http->read_response_body_chunk();
-            if (chunk.size() == 0)
-                OS::get_singleton()->delay_usec(1000);
-            else
-                rb = rb + chunk;
-        }
-
-        text = rb.get_string_from_ascii();
-    }
-
-    if (http->get_response_code() == 200)
-    {
-        sign_in_response->from_dict(JSON::parse_string(text));
-        save_cache();
-        emit_signal("on_signed_in");
-        signed_in = true;
-    }
-    else
-    {
-        Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(text));
-        ERR_FAIL_MSG(parsed_content->get_message());
-    }
+    cpr::PostCallback([](const cpr::Response &response)
+                      { instance->handle_sign_in_response(response.status_code, response.text.c_str()); },
+                      cpr::Url{url.utf8()},
+                      cpr::Header{{"ProjectId", (std::string)project_id.utf8()},
+                                  {"UnityEnvironment", (std::string)environment.utf8()},
+                                  {"Content-Type", "application/json"}},
+                      cpr::Body{json_string.utf8()});
 }
 
 void AuthenticationService::sign_up_with_username_password(const String &username, const String &password)
@@ -256,6 +191,22 @@ void AuthenticationService::set_profile(const String &profile_name)
 
     save_persistents();
     load_cache();
+}
+
+void AuthenticationService::handle_sign_in_response(int code, String text)
+{
+    if (code == 200)
+    {
+        sign_in_response->from_dict(JSON::parse_string(text));
+        save_cache();
+        emit_signal("on_signed_in");
+        signed_in = true;
+    }
+    else
+    {
+        Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(text));
+        ERR_FAIL_MSG(parsed_content->get_message());
+    }
 }
 
 void AuthenticationService::clear_session_token()
