@@ -20,15 +20,11 @@ namespace godot
         String environment;
 
         bool signed_in = false;
-        String access_token;
-        String player_id;
-        String player_name;
         String profile = "DefaultProfile";
-        String last_notification_date;
 
         Ref<SignInResponse> sign_in_response;
-        String session_token;
-        const String AUTH_URL = "https://player-auth.services.api.unity.com/v1";
+        Ref<ConfigFile> config;
+        const String AUTH_URL = "https://player-auth.services.api.unity.com";
         const String PROFILE_REGEX = "^[a-zA-Z0-9_-]{1,30}$";
         const String STEAM_IDENTITY_REGEX = "^[a-zA-Z0-9]{5,30}$";
         const String CACHE_PATH = "user://GodotUGS_UserCache_gdextension.cfg";
@@ -37,6 +33,12 @@ namespace godot
         void _on_initialized(bool initialized);
 
         void sign_in_with_session_token(const String &session_token);
+        void clear_access_token();
+
+        void save_cache();
+        void save_persistents();
+        void load_cache();
+        void load_persistents();
 
     protected:
         static void _bind_methods();
@@ -58,10 +60,11 @@ namespace godot
         void sign_in_with_username_password(const String &username, const String &password);
         void sign_up_with_username_password(const String &username, const String &password);
         void add_username_password(const String &username, const String &password);
+        void update_password(const String &current_password, const String &new_password);
         void delete_account();
 
         void sign_out(bool clear_credentials = false);
-        void switch_profile(const String &profile_name);
+        void set_profile(const String &profile_name);
         void clear_session_token();
     };
 }

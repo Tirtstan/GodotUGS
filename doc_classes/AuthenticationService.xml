@@ -15,7 +15,7 @@
 			<param index="0" name="username" type="String" />
 			<param index="1" name="password" type="String" />
 			<description>
-				Sign up with a new Username/Password and add it to the current logged in user.
+				Sign up with a new username/password and add it to the current logged in user.
 			</description>
 		</method>
 		<method name="clear_session_token">
@@ -60,13 +60,6 @@
 				Returns the current player's name. This value is cached between sessions.
 			</description>
 		</method>
-		<method name="get_profile" qualifiers="const">
-			<return type="String" />
-			<description>
-				The profile isolates the values saved to the config file. You can use profiles to sign in to multiple accounts on a single device. 
-				Use [method switch_profile] to change this value.
-			</description>
-		</method>
 		<method name="is_signed_in" qualifiers="const">
 			<return type="bool" />
 			<description>
@@ -104,14 +97,21 @@
 				[i][b]Note:[/b] The [u]username[/u] of the player must be unique per project and contains 3-20 characters of alphanumeric and/or these special characters [. - @ _]. The [u]password[/u] of the player must contain 8-30 characters with at least 1 uppercase, 1 lower case, 1 number, and 1 special character.[/i]
 			</description>
 		</method>
-		<method name="switch_profile">
+		<method name="update_password">
 			<return type="void" />
-			<param index="0" name="profile_name" type="String" />
+			<param index="0" name="current_password" type="String" />
+			<param index="1" name="new_password" type="String" />
 			<description>
-				Switch the current profile. You can use profiles to sign in to multiple accounts on a single device.
+				Update password credentials for the username/password user.
 			</description>
 		</method>
 	</methods>
+	<members>
+		<member name="profile" type="String" setter="set_profile" getter="get_profile"
+			default="&quot;DefaultProfile&quot;">
+			The profile isolates the values saved to the config file. You can use profiles to sign in to multiple accounts on a single device.
+		</member>
+	</members>
 	<signals>
 		<signal name="on_signed_in">
 			<description>
