@@ -5,9 +5,17 @@ from pathlib import Path
 # TODO: Do not copy environment after godot-cpp/test is updated <https://github.com/godotengine/godot-cpp/blob/master/test/SConstruct>.
 env = SConscript("godot-cpp/SConstruct")
 
-# Add source files.
-env.Append(CPPPATH=["src/"])
-sources = Glob("src/*.cpp")
+# Initialize the CPPPATH with the src directory and all its subdirectories
+cpppath = ["src/"] + glob("src/**/", recursive=True)
+
+# Add include paths for the third-party library (e.g., cpr)
+cpppath.append("dependencies/include/")
+
+# Append the collected paths to the CPPPATH
+env.Append(CPPPATH=cpppath)
+
+# Use glob to find all .cpp files in src directory and its subdirectories
+sources = glob("src/**/*.cpp", recursive=True)
 
 # Find gdextension path even if the directory or extension is renamed (e.g. project/addons/example/example.gdextension).
 (extension_path,) = glob("project/addons/*/*.gdextension")
@@ -18,11 +26,30 @@ addon_path = Path(extension_path).parent
 # Find the project name from the gdextension file (e.g. example).
 project_name = Path(extension_path).stem
 
+# Add library paths for the third-party library (e.g., cpr)
+env.Append(LIBPATH=["dependencies/lib/"])
+
+# Link the third-party library (e.g., cpr)
+env.Append(LIBS=["cpr", "libcurl", "zlib"])
+
+# Ensure the runtime library setting matches
+env.Append(CCFLAGS=['/MT'])  # Use /MD for dynamic runtime or /MT for static runtime
+
 # TODO: Cache is disabled currently.
 # scons_cache_path = os.environ.get("SCONS_CACHE")
 # if scons_cache_path != None:
 #     CacheDir(scons_cache_path)
 #     print("Scons cache enabled... (path: '" + scons_cache_path + "')")
+
+
+# Class Documentation, run once generated cpp file is deleted (weird)
+# if env["target"] in ["editor", "template_debug"]:
+#     try:
+#         doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=glob("doc_classes/*.xml"))
+#         sources.append(doc_data)
+#     except AttributeError:
+#         print("Not including class reference as we're targeting a pre-4.3 baseline.")
+
 
 # Create the library target (e.g. libexample.linux.debug.x86_64.so).
 debug_or_release = "release" if env["target"] == "template_release" else "debug"

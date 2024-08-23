@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc8s4f46ttc82"]
+
+[ext_resource type="APIResource" uid="uid://c3uikkcjnrbi1" path="res://DontShip/APIResource.tres" id="1_rtjok"]
+
+[node name="GodotUGS" type="GodotUGS"]
+api_resource = ExtResource("1_rtjok")
