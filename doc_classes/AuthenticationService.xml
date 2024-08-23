@@ -113,6 +113,13 @@
 		</member>
 	</members>
 	<signals>
+		<signal name="on_error">
+			<param index="0" name="error" type="int" />
+			<param index="1" name="error_message" type="String" />
+			<description>
+				Emitted when an error occurs during any request. Provides the error code and message.
+			</description>
+		</signal>
 		<signal name="on_signed_in">
 			<description>
 				Emitted when a sign-in attempt has completed successfully.

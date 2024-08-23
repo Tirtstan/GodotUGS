@@ -3,6 +3,7 @@
 
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/json.hpp>
+#include <cpr/cpr.h>
 
 #include "APIResource.h"
 #include "GodotUGS.h"
@@ -19,6 +20,7 @@ namespace godot
 
         const String UnityServicesUrl = "https://services.api.unity.com";
         String environment = "production";
+        cpr::Header default_headers;
 
     protected:
         static void _bind_methods();
@@ -29,9 +31,10 @@ namespace godot
         static UnityServices *get_singleton();
 
         void initialize();
-
         String get_environment() const;
         void set_environment(const String &environment = "production");
+
+        cpr::Header get_default_headers() const;
     };
 }
 

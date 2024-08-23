@@ -18,9 +18,6 @@ namespace godot
     private:
         static AuthenticationService *instance;
 
-        String project_id;
-        String environment;
-
         bool signed_in = false;
         String profile = "DefaultProfile";
 

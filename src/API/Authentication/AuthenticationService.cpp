@@ -53,6 +53,7 @@ void AuthenticationService::_bind_methods()
 
     ADD_SIGNAL(MethodInfo("on_signed_in"));
     ADD_SIGNAL(MethodInfo("on_signed_out"));
+    ADD_SIGNAL(MethodInfo("on_error", PropertyInfo(Variant::INT, "error"), PropertyInfo(Variant::STRING, "error_message")));
 }
 
 void AuthenticationService::_on_initialized(bool initialized)
@@ -60,14 +61,8 @@ void AuthenticationService::_on_initialized(bool initialized)
     if (!initialized)
         return;
 
-    project_id = GodotUGS::get_singleton()->get_project_id();
-    environment = UnityServices::get_singleton()->get_environment();
-
     session = std::make_shared<cpr::Session>();
-    auto default_headers = cpr::Header{{"ProjectId", (std::string)project_id.utf8()},
-                                       {"UnityEnvironment", (std::string)environment.utf8()},
-                                       {"Content-Type", "application/json"}};
-    session->SetHeader(default_headers);
+    session->SetHeader(UnityServices::get_singleton()->get_default_headers());
 
     sign_in_response.instantiate();
     config.instantiate();
@@ -160,18 +155,87 @@ void AuthenticationService::sign_in_with_username_password(const String &usernam
 
 void AuthenticationService::sign_up_with_username_password(const String &username, const String &password)
 {
+    String url = AUTH_URL.utf8() + "/v1/authentication/usernamepassword/sign-up";
+    Dictionary dict;
+    dict["username"] = username;
+    dict["password"] = password;
+    String json_string = JSON::stringify(dict);
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBody(cpr::Body{json_string.utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::add_username_password(const String &username, const String &password)
 {
+    if (get_access_token().is_empty())
+        emit_signal("on_error", Error::ERR_UNAUTHORIZED, "User must be signed in an already existent account to add a username and password.");
+
+    String url = AUTH_URL.utf8() + "/v1/authentication/usernamepassword/sign-up";
+    Dictionary dict;
+    dict["username"] = username;
+    dict["password"] = password;
+    String json_string = JSON::stringify(dict);
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBody(cpr::Body{json_string.utf8()});
+    session->SetBearer(cpr::Bearer{(std::string)get_access_token().utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::update_password(const String &current_password, const String &new_password)
 {
+    if (get_access_token().is_empty())
+        emit_signal("on_error", Error::ERR_UNAUTHORIZED, "User must be signed in an already existent account to update the password.");
+
+    String url = AUTH_URL.utf8() + "/v1/authentication/usernamepassword/update-password";
+    Dictionary dict;
+    dict["password"] = current_password;
+    dict["newPassword"] = new_password;
+    String json_string = JSON::stringify(dict);
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBody(cpr::Body{json_string.utf8()});
+    session->SetBearer(cpr::Bearer{(std::string)get_access_token().utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::delete_account()
 {
+    String url = AUTH_URL.utf8() + "/v1/users/" + get_player_id();
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBearer(cpr::Bearer{(std::string)get_access_token().utf8()});
+    session->DeleteCallback([this](const cpr::Response &response)
+                            { 
+                              if (response.status_code == 200)
+                              {    
+                                   this->sign_out(true);
+                              }
+                              else
+                              {
+                                   Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(response.text.c_str()));
+                                   emit_signal("on_error", Error::FAILED, parsed_content->get_message());
+                              } });
+}
+
+void AuthenticationService::handle_sign_in_response(int code, String text)
+{
+    if (code == 200)
+    {
+        sign_in_response->from_dict(JSON::parse_string(text));
+        save_cache();
+        emit_signal("on_signed_in");
+        signed_in = true;
+    }
+    else
+    {
+        Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(text));
+        emit_signal("on_error", Error::FAILED, parsed_content->get_message());
+    }
 }
 
 void AuthenticationService::sign_out(bool clear_credentials)
@@ -201,22 +265,6 @@ void AuthenticationService::set_profile(const String &profile_name)
 
     save_persistents();
     load_cache();
-}
-
-void AuthenticationService::handle_sign_in_response(int code, String text)
-{
-    if (code == 200)
-    {
-        sign_in_response->from_dict(JSON::parse_string(text));
-        save_cache();
-        emit_signal("on_signed_in");
-        signed_in = true;
-    }
-    else
-    {
-        Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(text));
-        ERR_FAIL_MSG(parsed_content->get_message());
-    }
 }
 
 void AuthenticationService::clear_session_token()

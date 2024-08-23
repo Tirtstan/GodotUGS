@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<class name="UnityServices" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<class name="UnityServices" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		The [code]UnityServices[/code] Singleton manages the initialization and configuration of Unity Gaming Services (UGS).
 	</brief_description>
@@ -16,11 +17,19 @@
 		</method>
 	</methods>
 	<members>
-		<member name="environment" type="String" setter="set_environment" getter="get_environment" default="&quot;production&quot;">
+		<member name="environment" type="String" setter="set_environment" getter="get_environment"
+			default="&quot;production&quot;">
 			The environment to use for Unity Gaming Services. Defaults to [code]production[/code].
 		</member>
 	</members>
 	<signals>
+		<signal name="on_error">
+			<param index="0" name="error" type="int" />
+			<param index="1" name="error_message" type="String" />
+			<description>
+				Emitted when an error occurs during initialization.
+			</description>
+		</signal>
 		<signal name="on_initialized">
 			<param index="0" name="initialized" type="bool" />
 			<description>

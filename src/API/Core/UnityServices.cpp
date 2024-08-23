@@ -32,6 +32,7 @@ void UnityServices::_bind_methods()
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "environment"), "set_environment", "get_environment");
 
     ADD_SIGNAL(MethodInfo("on_initialized", PropertyInfo(Variant::BOOL, "initialized")));
+    ADD_SIGNAL(MethodInfo("on_error", PropertyInfo(Variant::INT, "error"), PropertyInfo(Variant::STRING, "error_message")));
 }
 
 void UnityServices::initialize()
@@ -39,17 +40,27 @@ void UnityServices::initialize()
     if (environment.is_empty())
         environment = "production";
 
-    cpr::GetCallback([](const cpr::Response &response)
+    String project_id = GodotUGS::get_singleton()->get_project_id();
+    default_headers = cpr::Header{{"ProjectId", (std::string)project_id.utf8()},
+                                  {"UnityEnvironment", (std::string)environment.utf8()},
+                                  {"Content-Type", "application/json"}};
+
+    cpr::GetCallback([this](const cpr::Response &response)
                      {
                         bool success = response.status_code == 200;
 
-                        instance->emit_signal("on_initialized", success);
+                        this->emit_signal("on_initialized", success);
                         if (!success)
                         {
                             Ref<CoreExceptionContent> parsed_content = memnew(CoreExceptionContent(response.text.c_str()));
-                            ERR_FAIL_MSG(parsed_content->get_message());
+                            emit_signal("on_error", Error::FAILED, parsed_content->get_message());
                         } },
                      cpr::Url{UnityServicesUrl.utf8()});
+}
+
+cpr::Header UnityServices::get_default_headers() const
+{
+    return default_headers;
 }
 
 String UnityServices::get_environment() const
