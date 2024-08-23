@@ -12,6 +12,7 @@ config_version=5
 
 config/name="GodotUGS"
 config/tags=PackedStringArray("tool")
+run/main_scene="res://DontShip/Test.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 
 [autoload]
