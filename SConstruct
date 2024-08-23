@@ -32,15 +32,11 @@ env.Append(LIBPATH=["dependencies/lib/"])
 # Link the third-party library (e.g., cpr)
 env.Append(LIBS=["cpr", "libcurl", "zlib"])
 
-# Ensure the runtime library setting matches
-env.Append(CCFLAGS=['/MT'])  # Use /MD for dynamic runtime or /MT for static runtime
-
 # TODO: Cache is disabled currently.
 # scons_cache_path = os.environ.get("SCONS_CACHE")
 # if scons_cache_path != None:
 #     CacheDir(scons_cache_path)
 #     print("Scons cache enabled... (path: '" + scons_cache_path + "')")
-
 
 # Class Documentation, run once generated cpp file is deleted (weird)
 # if env["target"] in ["editor", "template_debug"]:
