@@ -1,6 +1,8 @@
 #ifndef AUTHENTICATIONSERVICE_H
 #define AUTHENTICATIONSERVICE_H
 
+#include <memory>
+#include <cpr/cpr.h>
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/config_file.hpp>
 #include "GodotUGS.h"
@@ -22,6 +24,7 @@ namespace godot
         bool signed_in = false;
         String profile = "DefaultProfile";
 
+        std::shared_ptr<cpr::Session> session;
         Ref<SignInResponse> sign_in_response;
         Ref<ConfigFile> config;
         const String AUTH_URL = "https://player-auth.services.api.unity.com";
@@ -32,6 +35,7 @@ namespace godot
 
         void _on_initialized(bool initialized);
 
+        String get_session_token() const;
         void sign_in_with_session_token(const String &session_token);
         void handle_sign_in_response(int code, String text);
         void clear_access_token();

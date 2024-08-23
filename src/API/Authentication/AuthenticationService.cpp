@@ -4,7 +4,6 @@
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/reg_ex.hpp>
 #include <godot_cpp/classes/thread.hpp>
-#include <cpr/cpr.h>
 
 using namespace godot;
 
@@ -61,10 +60,14 @@ void AuthenticationService::_on_initialized(bool initialized)
     if (!initialized)
         return;
 
-    UtilityFunctions::print("init from auth!");
-
     project_id = GodotUGS::get_singleton()->get_project_id();
     environment = UnityServices::get_singleton()->get_environment();
+
+    session = std::make_shared<cpr::Session>();
+    auto default_headers = cpr::Header{{"ProjectId", (std::string)project_id.utf8()},
+                                       {"UnityEnvironment", (std::string)environment.utf8()},
+                                       {"Content-Type", "application/json"}};
+    session->SetHeader(default_headers);
 
     sign_in_response.instantiate();
     config.instantiate();
@@ -81,6 +84,11 @@ bool AuthenticationService::is_signed_in() const
 String AuthenticationService::get_access_token() const
 {
     return sign_in_response->id_token;
+}
+
+String AuthenticationService::get_session_token() const
+{
+    return sign_in_response->session_token;
 }
 
 String AuthenticationService::get_player_id() const
@@ -110,25 +118,30 @@ String AuthenticationService::get_last_notification_date() const
 
 void AuthenticationService::sign_in_anonymously()
 {
-    // String url = AUTH_URL.utf8() + "/authentication/anonymous";
-    // cpr::Response response = cpr::Post(cpr::Url{url.utf8()}, cpr::Header{{"ProjectId", project_id.utf8()}, {"Content-Type", "application/json"}});
+    if (does_session_token_exist())
+    {
+        sign_in_with_session_token(get_session_token());
+        return;
+    }
 
-    // UtilityFunctions::print("Response: " + (String)response.text.c_str());
-    // if (response.error.code == cpr::ErrorCode::OK)
-    // {
-    //     emit_signal("on_signed_in");
-    //     signed_in = true;
-    // }
-    // else
-    // {
-    //     UtilityFunctions::print("Failed to sign in anonymously: " + (String)response.error.message.c_str());
-    // }
+    String url = AUTH_URL.utf8() + "/v1/authentication/anonymous";
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::sign_in_with_session_token(const String &session_token)
 {
-    emit_signal("on_signed_in");
-    signed_in = true;
+    String url = AUTH_URL.utf8() + "/v1/authentication/session-token";
+    Dictionary dict;
+    dict["sessionToken"] = session_token;
+    String json_string = JSON::stringify(dict);
+
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBody(cpr::Body{json_string.utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::sign_in_with_username_password(const String &username, const String &password)
@@ -139,13 +152,10 @@ void AuthenticationService::sign_in_with_username_password(const String &usernam
     dict["password"] = password;
     String json_string = JSON::stringify(dict);
 
-    cpr::PostCallback([](const cpr::Response &response)
-                      { instance->handle_sign_in_response(response.status_code, response.text.c_str()); },
-                      cpr::Url{url.utf8()},
-                      cpr::Header{{"ProjectId", (std::string)project_id.utf8()},
-                                  {"UnityEnvironment", (std::string)environment.utf8()},
-                                  {"Content-Type", "application/json"}},
-                      cpr::Body{json_string.utf8()});
+    session->SetUrl(cpr::Url{url.utf8()});
+    session->SetBody(cpr::Body{json_string.utf8()});
+    session->PostCallback([this](const cpr::Response &response)
+                          { this->handle_sign_in_response(response.status_code, response.text.c_str()); });
 }
 
 void AuthenticationService::sign_up_with_username_password(const String &username, const String &password)
